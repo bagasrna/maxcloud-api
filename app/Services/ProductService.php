@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Interfaces\ProductRepositoryInterface;
 use App\Models\Product;
+use App\Interfaces\ProductRepositoryInterface;
 
 class ProductService
 {
@@ -16,7 +16,7 @@ class ProductService
 
     public function getAll()
     {
-        return $this->productRepository->index();
+        return $this->productRepository->getAll();
     }
     
     public function findProduct(int $id)

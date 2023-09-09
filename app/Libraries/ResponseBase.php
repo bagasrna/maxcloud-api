@@ -9,7 +9,7 @@ class ResponseBase
      * @param array $data
      * @return json
      */
-    public static function success($message, $data = null, $status = 'success',  $code = 200)
+    public static function success($message, $data = null, $code = 200, $status = 'success')
     {
         $response = [];
         $response['code'] = $code;
@@ -17,7 +17,7 @@ class ResponseBase
         $response['message'] = isset($message) && $message ? $message : null;
         $response['data'] = isset($data) && $data ? $data : null;
 
-        return response()->json($response)->header('Content-Language', 'id');
+        return response()->json($response, $code)->header('Content-Language', 'id');
     }
 
      /**

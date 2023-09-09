@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Libraries\ResponseBase;
+use App\Services\ProductService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 
@@ -18,7 +19,9 @@ class ProductController extends Controller
 
     public function getAll()
     {
-        // Implementasi logika untuk menampilkan semua produk.
+        $products = $this->productService->getAll();
+        
+        return ResponseBase::success('Berhasil mendapatkan data produk!', $products);
     }
 
     public function show($id)
