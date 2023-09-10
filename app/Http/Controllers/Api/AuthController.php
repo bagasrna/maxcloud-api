@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Libraries\ResponseBase;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -14,19 +15,20 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            'email' => 'required|string|exists:users,email',
+            'email' => 'required|string',
             'password' => 'required|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails())
             return ResponseBase::error($validator->errors(), 422);
-        
+
         $credentials = $request->only('email', 'password');
         
-        if (!$token = JWTAuth::attempt($credentials))
-            return ResponseBase::error("Password salah", 403);
-        
+        $token = request()->routeIs('auth.user') ? Auth::guard('user')->attempt($credentials) : Auth::guard('admin')->attempt($credentials);
+        if (!$token)
+            return ResponseBase::error("Email atau Password salah", 403);
+
         return ResponseBase::success('Login berhasil', ['token' => $token, 'type' => 'bearer']);
     }
 

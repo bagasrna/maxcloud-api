@@ -15,10 +15,16 @@ class ProductController extends Controller
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
+        $this->middleware('permission:product-list|product-create|product-edit|product-delete', ['only' => ['getAll']]);
+        $this->middleware('permission:product-list', ['only' => ['show']]);
+        $this->middleware('permission:product-create', ['only' => ['store']]);
+        $this->middleware('permission:product-edit', ['only' => ['update']]);
+        $this->middleware('permission:product-delete', ['only' => ['delete']]);
     }
 
     public function getAll()
     {
+        dd('get');
         $products = $this->productService->getAll();
         
         return ResponseBase::success('Berhasil mendapatkan data produk!', $products);
@@ -29,8 +35,9 @@ class ProductController extends Controller
         // Implementasi logika untuk menampilkan produk.
     }
 
-    public function create(ProductRequest $request)
+    public function store(ProductRequest $request)
     {
+        dd('create');
         try {
             $data = $request->all();
             $product = $this->productService->createProduct($data);

@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 
-Route::group(['prefix' => 'auth' ,'middleware' => 'guest'], function () {
-    Route::post('/login', [AuthController::class, 'login']);
+Route::group(['prefix' => 'auth' , 'as' => 'auth.', 'middleware' => 'guest'], function () {
+    Route::post('/admin-login', [AuthController::class, 'login'])->name('admin');
+    Route::post('/login', [AuthController::class, 'login'])->name('user');
     Route::post('/register', [AuthController::class, 'register']);
 });
 
