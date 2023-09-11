@@ -12,22 +12,34 @@ class PermissionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = [
-            'product-list',
-            'product-create',
-            'product-edit',
-            'product-delete',
-            'order-list',
-            'order-create',
-            'order-validate',
-            'user-ban',
+        $permissionsAdmins = [
+            'admin-product-list',
+            'admin-product-create',
+            'admin-product-edit',
+            'admin-product-delete',
+            'admin-order-list',
+            'admin-order-validate',
+            'admin-user-ban',
+         ];
+
+         $permissionsUsers = [
+            'user-product-list',
+            'user-order-list',
+            'user-order-create',
          ];
       
-         foreach ($permissions as $permission) {
+         foreach ($permissionsAdmins as $permissionAdmin) {
               Permission::create([
-                'name' => $permission,
-                'guard_name' => 'api'
+                'name' => $permissionAdmin,
+                'guard_name' => 'admin'
             ]);
          }
+
+         foreach ($permissionsUsers as $permissionUser) {
+            Permission::create([
+              'name' => $permissionUser,
+              'guard_name' => 'user'
+          ]);
+       }
     }
 }

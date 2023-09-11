@@ -12,38 +12,36 @@ class RoleTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = [
-            'User',
-            'Admin',
-         ];
-      
-         foreach ($roles as $role) {
-              Role::create([
-                'name' => $role,
-                'guard_name' => 'api'
-            ]);
-         }
+        Role::create([
+            'name' => 'User',
+            'guard_name' => 'user'
+        ]);
 
-         $adminPermissions = [
-            'product-list',
-            'product-create',
-            'product-edit',
-            'product-delete',
-            'order-list',
-            'order-validate',
-            'user-ban',
+        Role::create([
+            'name' => 'Admin',
+            'guard_name' => 'admin'
+        ]);
+
+        $adminPermissions = [
+            'admin-product-list',
+            'admin-product-create',
+            'admin-product-edit',
+            'admin-product-delete',
+            'admin-order-list',
+            'admin-order-validate',
+            'admin-user-ban',
         ];
 
         $userPermissions = [
-            'product-list',
-            'order-list',
-            'order-create',
+            'user-product-list',
+            'user-order-list',
+            'user-order-create',
         ];
 
-         $adminRole = Role::where('name', 'Admin')->first();
-         $adminRole->syncPermissions($adminPermissions);
+        $adminRole = Role::where('name', 'admin')->first();
+        $adminRole->syncPermissions($adminPermissions);
 
-         $userRole = Role::where('name', 'User')->first();
-         $userRole->syncPermissions($userPermissions);
+        $userRole = Role::where('name', 'user')->first();
+        $userRole->syncPermissions($userPermissions);
     }
 }

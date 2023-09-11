@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Libraries\ResponseBase;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -57,8 +58,16 @@ class AuthController extends Controller
 
             return ResponseBase::success("Berhasil register!", $user);
         } catch (\Exception $e) {
+            Log::error('Gagal register: ' . $e->getMessage());
             return ResponseBase::error('Gagal register!', 409);
         }
+    }
+
+    public function getProfile()
+    {
+        $user = request()->routeIs('auth.profile.user') ? Auth::guard('user')->user() : Auth::guard('admin')->user();
+
+        return ResponseBase::success('Berhasil mendapatkan data profile', ['user' => $user]);
     }
 
     public function logout()

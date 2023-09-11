@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Throwable;
 use App\Libraries\ResponseBase;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -45,7 +47,13 @@ class Handler extends ExceptionHandler
             } else if ($e instanceof MethodNotAllowedHttpException) {
                 Log::error($e->getMessage());
                 return ResponseBase::error('Method tidak diizinkan', 405);
-            } else {
+            } else if ($e instanceof ValidationException) {
+                Log::error($e->getMessage());
+                return ResponseBase::error($e->validator->errors(), 422);
+            } else if ($e instanceof UnauthorizedException) {
+                Log::error($e->getMessage());
+                return ResponseBase::error('Tidak ada hak akses', 401);
+            }  else {
                 Log::error($e->getMessage());
                 return ResponseBase::error('Internal server error', 500);
             }

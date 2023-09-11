@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Libraries\ResponseBase;
 use App\Services\ProductService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 
@@ -15,16 +16,15 @@ class ProductController extends Controller
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
-        $this->middleware('permission:product-list|product-create|product-edit|product-delete', ['only' => ['getAll']]);
-        $this->middleware('permission:product-list', ['only' => ['show']]);
-        $this->middleware('permission:product-create', ['only' => ['store']]);
-        $this->middleware('permission:product-edit', ['only' => ['update']]);
-        $this->middleware('permission:product-delete', ['only' => ['delete']]);
+        $this->middleware('permission:admin-product-list|user-product-list', ['only' => ['getAll']]);
+        $this->middleware('permission:admin-product-list|user-product-list', ['only' => ['show']]);
+        $this->middleware('permission:admin-product-create', ['only' => ['store']]);
+        $this->middleware('permission:admin-product-edit', ['only' => ['update']]);
+        $this->middleware('permission:admin-product-delete', ['only' => ['delete']]);
     }
 
     public function getAll()
     {
-        dd('get');
         $products = $this->productService->getAll();
         
         return ResponseBase::success('Berhasil mendapatkan data produk!', $products);
@@ -32,30 +32,45 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        // Implementasi logika untuk menampilkan produk.
+        $product = $this->productService->findProduct($id);
+
+        return ResponseBase::success('Berhasil mendapatkan data produk!', $product);
     }
 
     public function store(ProductRequest $request)
     {
-        dd('create');
         try {
             $data = $request->all();
             $product = $this->productService->createProduct($data);
 
             return ResponseBase::success("Berhasil menambahkan data produk!", $product, 201);
         } catch (\Exception $e) {
-            // Tangkap dan kelola pengecualian di sini.
-            return ResponseBase::error("Gagal menambahkan data produk!", $product);
+            Log::error('Gagal menambahkan data produk: ' . $e->getMessage());
+            return ResponseBase::error("Gagal menambahkan data produk!", 409);
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Product $product, ProductRequest $request)
     {
-        // Implementasi logika untuk mengupdate produk.
+        try {
+            $data = $request->all();
+            $product = $this->productService->updateProduct($product, $data);
+
+            return ResponseBase::success("Berhasil merubah data produk!", $product);
+        } catch (\Exception $e) {
+            Log::error('Gagal merubah data produk: ' . $e->getMessage());
+            return ResponseBase::error("Gagal merubah data produk!", 409);
+        }
     }
 
-    public function delete($id)
+    public function delete(Product $product)
     {
-        // Implementasi logika untuk menghapus produk.
+        try {
+            $this->productService->deleteProduct($product);
+            return ResponseBase::success("Berhasil menghapus data produk!");
+        } catch (\Exception $e) {
+            Log::error('Gagal menghapus data produk: ' . $e->getMessage());
+            return ResponseBase::error('Gagal menghapus data produk!', 409);
+        }
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Libraries\ResponseBase;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ProductRequest extends FormRequest
 {
@@ -13,7 +13,7 @@ class ProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,13 +23,13 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->routeIs('products.store')) {
+        if ($this->routeIs('product.create')) {
             return [
                 'name' => 'required|string|unique:products|max:255',
             ];
-        } elseif ($this->routeIs('products.update')) {
+        } elseif ($this->routeIs('product.update')) {
             return [
-                'name' => 'nullable|string|max:255|unique:products,name,' . $this->id,
+                'name' => 'required|string|max:255|unique:products,name,' . $this->id,
             ];
         }
 
@@ -38,8 +38,6 @@ class ProductRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        throw new \Illuminate\Validation\ValidationException(
-            ResponseBase::error($validator->errors(), 422)
-        );
+        throw (new ValidationException($validator));
     }
 }

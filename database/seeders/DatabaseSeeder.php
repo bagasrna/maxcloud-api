@@ -24,6 +24,22 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionTableSeeder::class);
         $this->call(RoleTableSeeder::class);
 
+        $adminPermissions = [
+            'admin-product-list',
+            'admin-product-create',
+            'admin-product-edit',
+            'admin-product-delete',
+            'admin-order-list',
+            'admin-order-validate',
+            'admin-user-ban',
+        ];
+
+        $userPermissions = [
+            'user-product-list',
+            'user-order-list',
+            'user-order-create',
+        ];
+
         $user = User::create([
             'fullname' => 'Bagas',
             'email' => 'bagas@gmail.com',
@@ -32,6 +48,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '62822349292'
         ]);
         $user->assignRole('User');
+        $user->syncPermissions($userPermissions);
 
         $admin = Admin::create([
             'fullname' => 'Raditya',
@@ -39,5 +56,6 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('Password234#')
         ]);
         $admin->assignRole('Admin');
+        $admin->syncPermissions($adminPermissions);
     }
 }

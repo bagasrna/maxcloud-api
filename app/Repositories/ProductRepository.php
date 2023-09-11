@@ -7,19 +7,24 @@ use App\Models\Product;
 
 class ProductRepository implements ProductRepositoryInterface
 {
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
+
     public function getAll()
     {
-        return Product::all();
+        return $this->product->all();
     }
 
     public function find(int $id)
     {
-        return Product::findOrFail($id);
+        return $this->product->findOrFail($id);
     }
 
     public function create(array $data)
     {
-        return Product::create($data);
+        return $this->product->create($data);
     }
 
     public function update(Product $product, array $data)
