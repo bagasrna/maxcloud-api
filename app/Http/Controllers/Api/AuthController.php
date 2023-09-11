@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:admin-user-ban', ['only' => ['banUser']]);
+    }
+
     public function login(Request $request)
     {
         $rules = [
@@ -75,5 +80,27 @@ class AuthController extends Controller
         JWTAuth::invalidate();
 
         return ResponseBase::success('Logout berhasil');
+    }
+
+    public function banUser(Request $request)
+    {
+        $rules = [
+            'user_id' => 'required|exists:users,id',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails())
+            return ResponseBase::error($validator->errors(), 422);
+
+        $user = User::findOrFail($request->user_id);
+
+        try {
+            $user->is_ban = 1;
+            $user->save();
+            return ResponseBase::success("Berhasil banned data user!");
+        } catch (\Exception $e) {
+            Log::error('Gagal banned data user!: ' . $e->getMessage());
+            return ResponseBase::error('Gagal banned data user!', 409);
+        }
     }
 }

@@ -11,16 +11,13 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class UserMiddleware
+class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
         try {
-            JWTAuth::parseToken()->authenticate();
-            if(Auth::guard('user')->check()){
-                if(Auth::guard('user')->user()->is_ban == 1)
-                return ResponseBase::error('Anda diblokir!', 401);
-            }
+            if (!Auth::guard('admin')->check())
+                return ResponseBase::error('Tidak ada hak akses!', 401);
         } catch (TokenExpiredException $e) {
             return ResponseBase::error('Token Expired', 401);
         } catch (TokenInvalidException $e) {

@@ -57,5 +57,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin->assignRole('Admin');
         $admin->syncPermissions($adminPermissions);
+
+        $this->call(OrderTableSeeder::class);
     }
 }

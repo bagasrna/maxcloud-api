@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('address');
             $table->string('password');
+            $table->boolean('is_ban')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
